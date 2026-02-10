@@ -14,8 +14,6 @@ import pandas as pd
 
 from .load_qualtrics import load_qualtrics_csv
 
-plt.switch_backend("Agg")
-
 CSV_PATH = "data/raw/Alternative CPA Pathways Survey_December 31, 2025_09.45.csv"
 REPORT_PATH = "reports/curriculum_priority_differences.md"
 FIGURES_DIR = Path("reports/figures")
@@ -441,6 +439,7 @@ def build_report(
 
 
 def main() -> None:
+    plt.switch_backend("Agg")
     df, question_map = load_qualtrics_csv(CSV_PATH)
 
     rank_cols, label_map = detect_ranking_block(df.columns, question_map)
