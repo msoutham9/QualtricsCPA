@@ -8,15 +8,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-import matplotlib
-
-matplotlib.use("Agg")
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 from .load_qualtrics import load_qualtrics_csv
+
+plt.switch_backend("Agg")
 
 CSV_PATH = "data/raw/Alternative CPA Pathways Survey_December 31, 2025_09.45.csv"
 REPORT_PATH = "reports/curriculum_priority_differences.md"
