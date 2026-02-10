@@ -8,11 +8,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-import matplotlib.pyplot as plt
+import importlib.util
 import numpy as np
 import pandas as pd
 
 from .load_qualtrics import load_qualtrics_csv
+
+if importlib.util.find_spec("matplotlib") is not None:
+    import matplotlib.pyplot as plt
+else:
+    plt = None
 
 CSV_PATH = "data/raw/Alternative CPA Pathways Survey_December 31, 2025_09.45.csv"
 REPORT_PATH = "reports/curriculum_priority_differences.md"
@@ -249,9 +254,7 @@ def add_stat_tests(
     rank_col: str,
     group_order: List[str],
 ) -> Tuple[Optional[float], Optional[float]]:
-    import importlib.util
-
-    if importlib.util.find_spec(\"scipy\") is None:
+    if importlib.util.find_spec("scipy") is None:
         return None, None
 
     from scipy import stats
@@ -348,6 +351,8 @@ def build_segment_table(
 
 
 def plot_overall_mean_rank(metrics: pd.DataFrame, output_path: Path) -> None:
+    if plt is None:
+        return
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.barh(metrics["Discipline"], metrics["MeanRank"], color="#4C72B0")
     ax.invert_yaxis()
@@ -363,6 +368,8 @@ def plot_segment_mean_rank(
     spec: SegmentSpec,
     output_path: Path,
 ) -> None:
+    if plt is None:
+        return
     mean_cols = [
         col for col in combined.columns if isinstance(col, tuple) and col[1] == "MeanRank"
     ]
@@ -504,6 +511,8 @@ def main() -> None:
             + ", ".join(warnings)
             + ". Configure CONFIG['segmentation_columns'] to override."
         )
+    if plt is None:
+        print("Warning: matplotlib is not available; charts will not be generated.")
 
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     plot_overall_mean_rank(overall_metrics, FIGURES_DIR / "overall_mean_rank.png")
